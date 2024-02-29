@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
 namespace c_ApiLayout
@@ -28,6 +29,16 @@ namespace c_ApiLayout
                 var settings = Configuration.GetSection("MDB_Settings");
                 var connectionString = settings["apiUrl"];
                 return new MongoClient(connectionString);
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost", builder =>
+                {
+                    builder.WithOrigins("http://localhost:5000") 
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
             });
         }
 
