@@ -368,3 +368,4 @@ FodyWeavers.xsd
 # Config Files
 appsettings.Dev.json
 >>>>>>> b0f8d9853aae267fca18f7207d16d7664112e9ab
+/c#ApiLayout/appsettings.json

@@ -2,11 +2,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
+
 namespace postly
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
         }
@@ -26,7 +27,7 @@ namespace postly
 
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
-                var settings = Configuration.GetSection("MDB_Settings");
+                var settings = Configuration.GetSection("MDB_Settings_Dev");
                 var connectionString = settings["apiUrl"];
                 return new MongoClient(connectionString);
             });
