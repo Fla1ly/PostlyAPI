@@ -27,7 +27,7 @@ namespace postly
 
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
-                var settings = Configuration.GetSection("MDB_Settings_Dev");
+                var settings = Configuration.GetSection("MDB_Settings");
                 var connectionString = settings["apiUrl"];
                 return new MongoClient(connectionString);
             });

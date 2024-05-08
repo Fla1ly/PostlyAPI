@@ -31,18 +31,22 @@ namespace postly.Controllers
         [HttpPost("userRegistration")]
         public IActionResult dtoEndpoint([FromBody] UserDto userForm)
         {
+            string hashedPassword = PasswordHasher.HashPassword(userForm.password);
+
             var userDocument = new BsonDocument
             {
                 { "username", userForm.username },
                 { "email", userForm.email },
-                { "password", userForm.password },
+                { "password", hashedPassword },
+                { "userID", userForm.userId },
+                { "Date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm")},
             };
 
             _userCollection.InsertOne(userDocument);
 
-            _logger.LogInformation("New user created. username: {username}, email: {email}, password: {password}", userForm.username, userForm.email, userForm.password);
+            _logger.LogInformation("New user created. username: {username}, email: {email}, password: {password}", userForm.username, userForm.email, hashedPassword);
 
-            return Ok(new { message = "created user", username = userForm.username, email = userForm.email, password = userForm.password });
+            return Ok(new { message = "created user", username = userForm.username, email = userForm.email });
         }
     }
 }
