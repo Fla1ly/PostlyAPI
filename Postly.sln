@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "c#ApiLayout", "c#ApiLayout\c#ApiLayout.csproj", "{3A0F3A12-D8B0-4262-8F0C-EDDDE605BA94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postly", "c#ApiLayout\Postly.csproj", "{3A0F3A12-D8B0-4262-8F0C-EDDDE605BA94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
-@c_ApiLayout_HostAddress = http://localhost:5138
+@postly_HostAddress = http://localhost:5138
 
-GET {{c_ApiLayout_HostAddress}}/weatherforecast/
+GET {{postly_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

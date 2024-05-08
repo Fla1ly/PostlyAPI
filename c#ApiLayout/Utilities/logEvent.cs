@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace c_ApiLayout.Utilities
+namespace postly.Utilities
 {
     public class Log
     {

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
-namespace c_ApiLayout
+namespace postly
 {
     public class Startup
     {

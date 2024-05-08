@@ -1,18 +1,18 @@
-using c_ApiLayout.Utilities;
+using postly.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace c_ApiLayout.Controllers
+namespace postly.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class apiLayoutController : ControllerBase
+    public class postlyController : ControllerBase
     {
         private readonly IMongoCollection<BsonDocument> _testCollection;
         private readonly IConfiguration _configuration;
 
-        public apiLayoutController(IConfiguration configuration, IMongoClient mongoClient)
+        public postlyController(IConfiguration configuration, IMongoClient mongoClient)
         {
             _configuration = configuration;
 
