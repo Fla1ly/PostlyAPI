@@ -48,5 +48,23 @@ namespace postly.Controllers
 
             return Ok(new { message = "created user", username = userForm.username, email = userForm.email });
         }
+
+        [HttpPost("userLogin")]
+        public IActionResult Login([FromBody] LoginDto loginForm)
+        {
+            var user = _userCollection.Find(Builders<BsonDocument>.Filter.Eq("username", loginForm.username)).FirstOrDefault();
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Invalid username or password" });
+            }
+
+            string storedHashedPassword = user["password"].AsString;
+            if (!PasswordHasher.VerifyPassword(loginForm.password, storedHashedPassword))
+            {
+                return Unauthorized(new { message = "Invalid username or password" });
+            }
+
+            return Ok(new { message = "Login successful" });
+        }
     }
 }

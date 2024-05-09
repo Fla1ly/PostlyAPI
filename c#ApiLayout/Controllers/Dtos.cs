@@ -13,3 +13,9 @@ public class UserDto
         userId = Guid.NewGuid().ToString();
     }
 }
+
+public class LoginDto
+{
+    public string username { get; set; }
+    public string password { get; set; }
+}
