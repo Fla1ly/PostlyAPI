@@ -1,11 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace postly.Controllers
 {
@@ -14,6 +9,7 @@ namespace postly.Controllers
     public class postlyController : ControllerBase
     {
         private readonly IMongoCollection<BsonDocument> _userCollection;
+        private readonly IMongoCollection<BsonDocument> _postCollection;
         private readonly IConfiguration _configuration;
         private readonly ILogger<postlyController> _logger;
 
@@ -24,12 +20,14 @@ namespace postly.Controllers
 
             var client = mongoClient;
             var userDatabase = client.GetDatabase("userDB");
+            var postDatabase = client.GetDatabase("BlogDB");
             _userCollection = userDatabase.GetCollection<BsonDocument>("users");
+            _postCollection = postDatabase.GetCollection<BsonDocument>("blogs");
             _logger = logger;
         }
 
         [HttpPost("userRegistration")]
-        public IActionResult dtoEndpoint([FromBody] UserDto userForm)
+        public IActionResult Register([FromBody] UserDto userForm)
         {
             string hashedPassword = PasswordHasher.HashPassword(userForm.password);
 
@@ -65,6 +63,27 @@ namespace postly.Controllers
             }
 
             return Ok(new { message = "Login successful" });
+        }
+
+        [HttpPost("createPost")]
+        public IActionResult CreatePost([FromBody] PostDto postDto )
+        {
+            {
+                var postDocument = new BsonDocument
+                {
+                    { "postId", postDto.postId },
+                    { "createdBy", postDto.createdBy },
+                    { "title", postDto.title },
+                    { "description", postDto.description },
+                    { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
+                };
+
+                _postCollection.InsertOne(postDocument);
+
+                _logger.LogInformation("New blog post created. Title: {title}, Description: {description}", postDto.title, postDto.description);
+
+                return Ok(new { message = "Blog post created successfully", title = postDto.title, description = postDto.description });
+            }
         }
     }
 }

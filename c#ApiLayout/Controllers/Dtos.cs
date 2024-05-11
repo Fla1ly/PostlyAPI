@@ -19,3 +19,17 @@ public class LoginDto
     public string username { get; set; }
     public string password { get; set; }
 }
+
+public class PostDto
+{
+    public string createdBy { get; set; }
+    public string postId { get; set; }
+    public required string title { get; set; }
+    public required string description { get; set; }
+
+    public PostDto()
+    {
+        postId = Guid.NewGuid().ToString();
+    }
+
+}
