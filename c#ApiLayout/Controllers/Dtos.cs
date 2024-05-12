@@ -22,10 +22,13 @@ public class LoginDto
 
 public class PostDto
 {
-    public string createdBy { get; set; }
+    public string author { get; set; }
     public string postId { get; set; }
+    public string category { get; set; }
     public required string title { get; set; }
     public required string description { get; set; }
+    public string status { get; set; }
+    public string visibility { get; set; }
 
     public PostDto()
     {

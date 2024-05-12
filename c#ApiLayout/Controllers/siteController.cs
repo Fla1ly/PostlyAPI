@@ -10,6 +10,7 @@ namespace postly.Controllers
     {
         private readonly IMongoCollection<BsonDocument> _userCollection;
         private readonly IMongoCollection<BsonDocument> _postCollection;
+        private readonly IMongoCollection<BsonDocument> _draftCollection;
         private readonly IConfiguration _configuration;
         private readonly ILogger<postlyController> _logger;
 
@@ -23,6 +24,7 @@ namespace postly.Controllers
             var postDatabase = client.GetDatabase("BlogDB");
             _userCollection = userDatabase.GetCollection<BsonDocument>("users");
             _postCollection = postDatabase.GetCollection<BsonDocument>("blogs");
+            _draftCollection = postDatabase.GetCollection<BsonDocument>("drafts");
             _logger = logger;
         }
 
@@ -72,10 +74,13 @@ namespace postly.Controllers
                 var postDocument = new BsonDocument
                 {
                     { "postId", postDto.postId },
-                    { "createdBy", postDto.createdBy },
+                    { "author", postDto.author },
+                    { "category", postDto.category },
                     { "title", postDto.title },
                     { "description", postDto.description },
                     { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
+                    { "status", postDto.status },
+                    { "visibility", postDto.visibility },
                 };
 
                 _postCollection.InsertOne(postDocument);
@@ -85,5 +90,31 @@ namespace postly.Controllers
                 return Ok(new { message = "Blog post created successfully", title = postDto.title, description = postDto.description });
             }
         }
+
+        [HttpPost("createDraft")]
+        public IActionResult CreateDraft([FromBody] PostDto postDto)
+        {
+            {
+                var draftDocument = new BsonDocument
+                {
+                    { "postId", postDto.postId },
+                    { "author", postDto.author },
+                    { "category", postDto.category },
+                    { "title", postDto.title },
+                    { "description", postDto.description },
+                    { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
+                    { "status", postDto.status },
+                    { "visibility", postDto.visibility },
+                };
+
+                _draftCollection.InsertOne(draftDocument);
+
+                _logger.LogInformation("New draft post created. Title: {title}, Description: {description}", postDto.title, postDto.description);
+
+                return Ok(new { message = "Blog draft created successfully", title = postDto.title, description = postDto.description });
+            }
+        }
+
+
     }
 }
