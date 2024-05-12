@@ -6,7 +6,7 @@ public class UserDto
     public string userId { get; }
     public required string username { get; set; }
     public required string email { get; set; }
-    public string password { get; set; }
+    public required string password { get; set; }
 
     public UserDto()
     {
@@ -24,11 +24,12 @@ public class PostDto
 {
     public string author { get; set; }
     public string postId { get; set; }
-    public string category { get; set; }
+    public required string category { get; set; }
     public required string title { get; set; }
+    public required string subtitle { get; set; }
     public required string description { get; set; }
-    public string status { get; set; }
-    public string visibility { get; set; }
+    public required string status { get; set; }
+    public required string visibility { get; set; }
 
     public PostDto()
     {

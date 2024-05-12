@@ -77,6 +77,7 @@ namespace postly.Controllers
                     { "author", postDto.author },
                     { "category", postDto.category },
                     { "title", postDto.title },
+                    { "subtitle", postDto.subtitle },
                     { "description", postDto.description },
                     { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
                     { "status", postDto.status },
@@ -101,6 +102,7 @@ namespace postly.Controllers
                     { "author", postDto.author },
                     { "category", postDto.category },
                     { "title", postDto.title },
+                    { "subtitle", postDto.subtitle },
                     { "description", postDto.description },
                     { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
                     { "status", postDto.status },
@@ -114,7 +116,5 @@ namespace postly.Controllers
                 return Ok(new { message = "Blog draft created successfully", title = postDto.title, description = postDto.description });
             }
         }
-
-
     }
 }
