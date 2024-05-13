@@ -131,6 +131,7 @@ namespace postly.Controllers
                 blogList.Add(new
                 {
                     Author = blog.GetValue("author").AsString,
+                    Category = blog.GetValue("category").AsString,
                     Title = blog.GetValue("title").AsString,
                     Subtitle = blog.GetValue("subtitle").AsString,
                     Description = blog.GetValue("description").AsString,
