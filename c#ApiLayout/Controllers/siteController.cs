@@ -116,5 +116,28 @@ namespace postly.Controllers
                 return Ok(new { message = "Blog draft created successfully", title = postDto.title, description = postDto.description });
             }
         }
+
+        [HttpGet("fetchBlogs")]
+
+        public IActionResult FetchBlogs()
+        {
+            var blogs = _postCollection.Find(new BsonDocument()).ToList();
+
+            _logger.LogInformation("Blogs retrieved");
+
+            var blogList = new List<object>();
+            foreach (var blog in blogs)
+            {
+                blogList.Add(new
+                {
+                    Author = blog.GetValue("author").AsString,
+                    Title = blog.GetValue("title").AsString,
+                    Subtitle = blog.GetValue("subtitle").AsString,
+                    Description = blog.GetValue("description").AsString,
+                    DateCreated = blog.GetValue("date Created").AsString,
+                });
+            }
+            return Ok(blogList);
+        }
     }
 }
