@@ -118,7 +118,6 @@ namespace postly.Controllers
         }
 
         [HttpGet("fetchBlogs")]
-
         public IActionResult FetchBlogs()
         {
             var blogs = _postCollection.Find(new BsonDocument()).ToList();
@@ -130,15 +129,43 @@ namespace postly.Controllers
             {
                 blogList.Add(new
                 {
-                    Author = blog.GetValue("author").AsString,
-                    Category = blog.GetValue("category").AsString,
-                    Title = blog.GetValue("title").AsString,
-                    Subtitle = blog.GetValue("subtitle").AsString,
-                    Description = blog.GetValue("description").AsString,
-                    DateCreated = blog.GetValue("date Created").AsString,
+                    id = blog.GetValue("postId").AsString,
+                    author = blog.GetValue("author").AsString,
+                    category = blog.GetValue("category").AsString,
+                    title = blog.GetValue("title").AsString,
+                    subtitle = blog.GetValue("subtitle").AsString,
+                    description = blog.GetValue("description").AsString,
+                    dateCreated = blog.GetValue("date Created").AsString,
                 });
             }
             return Ok(blogList);
+        }
+
+        [HttpGet("fetchBlog/{postId}")]
+        public IActionResult FetchBlog(string postId)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("postId", postId);
+            var blog = _postCollection.Find(filter).FirstOrDefault();
+
+            if (blog == null)
+            {
+                return NotFound(new { message = "Blog not found" });
+            }
+
+            var blogDetails = new
+            {
+                Author = blog.GetValue("author").AsString,
+                Category = blog.GetValue("category").AsString,
+                createdDate = blog.GetValue("date Created").AsString,
+                Title = blog.GetValue("title").AsString,
+                Subtitle = blog.GetValue("subtitle").AsString,
+                Description = blog.GetValue("description").AsString,
+                DateCreated = blog.GetValue("date Created").AsString,
+            };
+
+            _logger.LogInformation("Blog post retrieved. PostId: {postId}", postId);
+
+            return Ok(blogDetails);
         }
     }
 }
