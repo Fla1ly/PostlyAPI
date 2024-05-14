@@ -167,5 +167,37 @@ namespace postly.Controllers
 
             return Ok(blogDetails);
         }
+
+        [HttpGet("fetchUserBlogs/{username}")]
+        public IActionResult FetchUserBlogs(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest(new { message = "Username not provided" });
+            }
+
+            var filter = Builders<BsonDocument>.Filter.Eq("author", username);
+            var blogs = _postCollection.Find(filter).ToList();
+
+            var blogList = new List<object>();
+            foreach (var blog in blogs)
+            {
+                blogList.Add(new
+                {
+                    id = blog.GetValue("postId").AsString,
+                    author = blog.GetValue("author").AsString,
+                    category = blog.GetValue("category").AsString,
+                    title = blog.GetValue("title").AsString,
+                    subtitle = blog.GetValue("subtitle").AsString,
+                    description = blog.GetValue("description").AsString,
+                    dateCreated = blog.GetValue("date Created").AsString,
+                    status = blog.GetValue("status").AsString,
+                    visibility = blog.GetValue("visibility").AsString,
+                });
+            }
+
+            return Ok(blogList);
+        }
+
     }
 }
