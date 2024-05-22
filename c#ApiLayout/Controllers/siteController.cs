@@ -199,7 +199,7 @@ namespace postly.Controllers
             return Ok(blogList);
         }
 
-        [HttpPut("editBlog/{postId}")]
+        [HttpPost("editBlog/{postId}")]
         public IActionResult EditBlog(string postId, [FromBody] UpdatePostDto updatePostDto)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("postId", postId);
