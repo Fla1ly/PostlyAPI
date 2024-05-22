@@ -199,5 +199,26 @@ namespace postly.Controllers
             return Ok(blogList);
         }
 
+        [HttpPut("editBlog/{postId}")]
+        public IActionResult EditBlog(string postId, [FromBody] UpdatePostDto updatePostDto)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("postId", postId);
+            var update = Builders<BsonDocument>.Update
+                .Set("title", updatePostDto.title)
+                .Set("subtitle", updatePostDto.subtitle)
+                .Set("description", updatePostDto.description)
+                .Set("category", updatePostDto.category)
+                .Set("visibility", updatePostDto.visibility);
+
+            var result = _postCollection.UpdateOne(filter, update);
+
+            if (result.MatchedCount == 0)
+            {
+                return NotFound(new { message = "Blog post not found" });
+            }
+
+            _logger.LogInformation("Blog post updated. PostId: {postId}", postId);
+            return Ok(new { message = "Blog post updated successfully" });
+        }
     }
 }

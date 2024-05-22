@@ -37,3 +37,11 @@ public class PostDto
     }
 
 }
+public class UpdatePostDto
+{
+    public string title { get; set; }
+    public string subtitle { get; set; }
+    public string description { get; set; }
+    public string category { get; set; }
+    public string visibility { get; set; }
+}
