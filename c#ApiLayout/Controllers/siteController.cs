@@ -17,9 +17,9 @@ namespace postly.Controllers
         private readonly IMongoCollection<BsonDocument> _userCollection;
         private readonly IMongoCollection<BsonDocument> _postCollection;
         private readonly IMongoCollection<BsonDocument> _draftCollection;
+        private readonly IMongoCollection<BsonDocument> _commentCollection;
         private readonly IConfiguration _configuration;
         private readonly ILogger<postlyController> _logger;
-
 
         public postlyController(IConfiguration configuration, IMongoClient mongoClient, ILogger<postlyController> logger)
         {
@@ -31,6 +31,7 @@ namespace postly.Controllers
             _userCollection = userDatabase.GetCollection<BsonDocument>("users");
             _postCollection = postDatabase.GetCollection<BsonDocument>("blogs");
             _draftCollection = postDatabase.GetCollection<BsonDocument>("drafts");
+            _commentCollection = postDatabase.GetCollection<BsonDocument>("comments");
             _logger = logger;
         }
 
@@ -95,53 +96,49 @@ namespace postly.Controllers
         }
 
         [HttpPost("createPost")]
-        public IActionResult CreatePost([FromBody] PostDto postDto )
+        public IActionResult CreatePost([FromBody] PostDto postDto)
         {
+            var postDocument = new BsonDocument
             {
-                var postDocument = new BsonDocument
-                {
-                    { "postId", postDto.postId },
-                    { "author", postDto.author },
-                    { "category", postDto.category },
-                    { "title", postDto.title },
-                    { "subtitle", postDto.subtitle },
-                    { "description", postDto.description },
-                    { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
-                    { "status", postDto.status },
-                    { "visibility", postDto.visibility },
-                };
+                { "postId", postDto.postId },
+                { "author", postDto.author },
+                { "category", postDto.category },
+                { "title", postDto.title },
+                { "subtitle", postDto.subtitle },
+                { "description", postDto.description },
+                { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
+                { "status", postDto.status },
+                { "visibility", postDto.visibility },
+            };
 
-                _postCollection.InsertOne(postDocument);
+            _postCollection.InsertOne(postDocument);
 
-                _logger.LogInformation("New blog post created. Title: {title}, Description: {description}", postDto.title, postDto.description);
+            _logger.LogInformation("New blog post created. Title: {title}, Description: {description}", postDto.title, postDto.description);
 
-                return Ok(new { message = "Blog post created successfully", title = postDto.title, description = postDto.description });
-            }
+            return Ok(new { message = "Blog post created successfully", title = postDto.title, description = postDto.description });
         }
 
         [HttpPost("createDraft")]
         public IActionResult CreateDraft([FromBody] PostDto postDto)
         {
+            var draftDocument = new BsonDocument
             {
-                var draftDocument = new BsonDocument
-                {
-                    { "postId", postDto.postId },
-                    { "author", postDto.author },
-                    { "category", postDto.category },
-                    { "title", postDto.title },
-                    { "subtitle", postDto.subtitle },
-                    { "description", postDto.description },
-                    { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
-                    { "status", postDto.status },
-                    { "visibility", postDto.visibility },
-                };
+                { "postId", postDto.postId },
+                { "author", postDto.author },
+                { "category", postDto.category },
+                { "title", postDto.title },
+                { "subtitle", postDto.subtitle },
+                { "description", postDto.description },
+                { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
+                { "status", postDto.status },
+                { "visibility", postDto.visibility },
+            };
 
-                _draftCollection.InsertOne(draftDocument);
+            _draftCollection.InsertOne(draftDocument);
 
-                _logger.LogInformation("New draft post created. Title: {title}, Description: {description}", postDto.title, postDto.description);
+            _logger.LogInformation("New draft post created. Title: {title}, Description: {description}", postDto.title, postDto.description);
 
-                return Ok(new { message = "Blog draft created successfully", title = postDto.title, description = postDto.description });
-            }
+            return Ok(new { message = "Blog draft created successfully", title = postDto.title, description = postDto.description });
         }
 
         [HttpGet("fetchBlogs")]
@@ -246,6 +243,70 @@ namespace postly.Controllers
 
             _logger.LogInformation("Blog post updated. PostId: {postId}", postId);
             return Ok(new { message = "Blog post updated successfully" });
+        }
+
+        [HttpPost("createComment/{postId}")]
+        public IActionResult CreateComment(string postId, [FromBody] CommentDto commentDto)
+        {
+            if (string.IsNullOrEmpty(postId))
+            {
+                return BadRequest(new { message = "Blog ID not provided" });
+            }
+
+            commentDto.postId = postId;
+
+            var commentDocument = new BsonDocument
+            {
+                { "commentId", commentDto.commentId },
+                { "made_by", commentDto.made_by },
+                { "postId", commentDto.postId },
+                { "content", commentDto.content },
+                { "likes", commentDto.likes },
+                { "date Created", DateTime.Now.ToString("MM-dd-yyyy HH:mm") },
+            };
+
+            _commentCollection.InsertOne(commentDocument);
+
+            _logger.LogInformation("New comment created. Made by: {made_by}, BlogId: {blogId}", commentDto.made_by, commentDto.postId);
+
+            return Ok(new { message = "Comment created successfully", made_by = commentDto.made_by, blogId = commentDto.postId });
+        }
+
+        [HttpGet("fetchComments/{postId}")]
+        public IActionResult FetchComments(string postId)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("postId", postId);
+            var comments = _commentCollection.Find(filter).ToList();
+
+            var commentList = new List<object>();
+            foreach (var comment in comments)
+            {
+                commentList.Add(new
+                {
+                    commentId = comment.GetValue("commentId").AsString,
+                    made_by = comment.GetValue("made_by").AsString,
+                    postId = comment.GetValue("postId").AsString,
+                    content = comment.GetValue("content").AsString,
+                    likes = comment.GetValue("likes").AsInt32,
+                    dateCreated = comment.GetValue("date Created").AsString,
+                });
+            }
+
+            return Ok(commentList);
+        }
+
+        [HttpGet("getBlogCount/{username}")]
+        public IActionResult GetBlogCount(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest(new { message = "Username not provided" });
+            }
+
+            var filter = Builders<BsonDocument>.Filter.Eq("author", username);
+            var count = _postCollection.CountDocuments(filter);
+
+            return Ok(new { username = username, blogCount = count });
         }
     }
 }

@@ -45,3 +45,17 @@ public class UpdatePostDto
     public string category { get; set; }
     public string visibility { get; set; }
 }
+
+public class CommentDto
+{
+    public string commentId { get; }
+    public string made_by { get; set; }
+    public string postId { get; set; }
+    public string content { get; set; }
+    public int likes { get; } = 0;
+
+    public CommentDto()
+    {
+        commentId = Guid.NewGuid().ToString();
+    }
+}
